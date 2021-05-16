@@ -13,20 +13,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-/* class LazySingleton {
-    private static LazySingleton Instance = null;
-    private LazySingleton() {}
-    public static LazySingleton getInstance() {
-        if (Instance == null) {
-            synchronized(LazySingleton.class) {
-                Instance = new LazySingleton();
-            }
-        }
-        return Instance;
-    }
-} */
-
-
 public class Util {
     private static Util instance;
     private static final String userName = "root";
