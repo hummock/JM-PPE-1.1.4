@@ -17,7 +17,7 @@ public class UserDaoJDBCImpl implements UserDao {
     Connection connection = null;
 
     public void createUsersTable() {
-        Statement statement = null;
+        PreparedStatement statement = null;
         String createUsersTable = "CREATE TABLE IF NOT EXISTS " +
                 tableName +
                 "(id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY , " +
@@ -26,73 +26,101 @@ public class UserDaoJDBCImpl implements UserDao {
                 "age MEDIUMINT NOT NULL)";
         try {
             connection = util.getInstance().getConnection();
-            statement = connection.createStatement();
+            statement = connection.prepareStatement(createUsersTable);
             statement.execute(createUsersTable);
             System.out.println("Таблица создана");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                connection.close();
-                statement.close();
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (statement != null) {
+                        statement.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
+
     public void dropUsersTable() {
-        Statement statement = null;
+        PreparedStatement statement = null;
         String dropUsersTable = "DROP TABLE IF EXISTS " +
                 tableName;
         try {
             connection = util.getInstance().getConnection();
-            statement = connection.createStatement();
+            statement = connection.prepareStatement(dropUsersTable);
             statement.execute(dropUsersTable);
             System.out.println("Таблица удалена");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                connection.close();
-                statement.close();
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (statement != null) {
+                        statement.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        Statement statement = null;
+        PreparedStatement statement = null;
         String saveUser = "INSERT INTO " +
                 tableName +
                 "( name , lastName, age ) " +
                 " values ('" + name + "', '" + lastName + "', '" + age + "')";
         try {
             connection = util.getInstance().getConnection();
-            statement = connection.createStatement();
+            statement = connection.prepareStatement(saveUser);
             statement.executeUpdate(saveUser);
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                connection.close();
-                statement.close();
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (statement != null) {
+                        statement.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
     public void removeUserById(long id) {
-        Statement statement = null;
+        PreparedStatement statement = null;
         String removeUserById = "DELETE FROM " +
                 tableName +
                 " WHERE id = " + id;
         try {
             connection = util.getInstance().getConnection();
-            statement = connection.createStatement();
+            statement = connection.prepareStatement(removeUserById);
             statement.executeUpdate(removeUserById);
             System.out.println("user id = " + id +" удален");
 
@@ -100,23 +128,33 @@ public class UserDaoJDBCImpl implements UserDao {
             e.printStackTrace();
         } finally {
             try {
-                connection.close();
-                statement.close();
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (statement != null) {
+                        statement.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
     public List<User> getAllUsers() {
         Statement statement = null;
+        ResultSet resultSet = null;
         List<User> users = new ArrayList<>();
 
         try {
             connection = util.getInstance().getConnection();
             statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("SELECT  * FROM " + tableName);
+            resultSet = statement.executeQuery("SELECT  * FROM " + tableName);
 
             while (resultSet.next()) {
                 long id = resultSet.getInt(1);
@@ -131,34 +169,68 @@ public class UserDaoJDBCImpl implements UserDao {
             e.printStackTrace();
         } finally {
             try {
-                connection.close();
-                statement.close();
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (statement != null) {
+                        statement.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (resultSet != null) try  {
+                        resultSet.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
+
         }
         return users;
     }
 
     public void cleanUsersTable() {
-        Statement statement = null;
+        PreparedStatement statement = null;
         String cleanUsersTable = "TRUNCATE TABLE " +
                 tableName;
         try {
             connection = util.getInstance().getConnection();
-            statement = connection.createStatement();
+            statement = connection.prepareStatement(cleanUsersTable);
             statement.execute(cleanUsersTable);
             System.out.println("Таблица очищена");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                connection.close();
-                statement.close();
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (statement != null) {
+                            statement.close();
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
+
     }
 }
 
