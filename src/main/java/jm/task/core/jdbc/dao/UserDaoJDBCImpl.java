@@ -9,11 +9,9 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
     public UserDaoJDBCImpl() {
-
     }
 
     private String tableName = "user";
-    Util util = new Util();
     Connection connection = null;
 
     public void createUsersTable() {
@@ -25,7 +23,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 "lastName VARCHAR(45) NOT NULL, " +
                 "age MEDIUMINT NOT NULL)";
         try {
-            connection = util.getInstance().getConnection();
+            Connection connection = Util.getInstance().getConnection();
             statement = connection.prepareStatement(createUsersTable);
             statement.execute(createUsersTable);
             System.out.println("Таблица создана");
@@ -36,27 +34,21 @@ public class UserDaoJDBCImpl implements UserDao {
                 if (connection != null) {
                     connection.close();
                 }
+                if (statement != null) {
+                    statement.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }
-
 
     public void dropUsersTable() {
         PreparedStatement statement = null;
         String dropUsersTable = "DROP TABLE IF EXISTS " +
                 tableName;
         try {
-            connection = util.getInstance().getConnection();
+            Connection connection = Util.getInstance().getConnection();
             statement = connection.prepareStatement(dropUsersTable);
             statement.execute(dropUsersTable);
             System.out.println("Таблица удалена");
@@ -67,16 +59,11 @@ public class UserDaoJDBCImpl implements UserDao {
                 if (connection != null) {
                     connection.close();
                 }
+                if (statement != null) {
+                    statement.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }
@@ -88,10 +75,9 @@ public class UserDaoJDBCImpl implements UserDao {
                 "( name , lastName, age ) " +
                 " values ('" + name + "', '" + lastName + "', '" + age + "')";
         try {
-            connection = util.getInstance().getConnection();
+            Connection connection = Util.getInstance().getConnection();
             statement = connection.prepareStatement(saveUser);
             statement.executeUpdate(saveUser);
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -99,16 +85,11 @@ public class UserDaoJDBCImpl implements UserDao {
                 if (connection != null) {
                     connection.close();
                 }
+                if (statement != null) {
+                    statement.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }
@@ -119,7 +100,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 tableName +
                 " WHERE id = " + id;
         try {
-            connection = util.getInstance().getConnection();
+            Connection connection = Util.getInstance().getConnection();
             statement = connection.prepareStatement(removeUserById);
             statement.executeUpdate(removeUserById);
             System.out.println("user id = " + id +" удален");
@@ -131,16 +112,11 @@ public class UserDaoJDBCImpl implements UserDao {
                 if (connection != null) {
                     connection.close();
                 }
+                if (statement != null) {
+                    statement.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }
@@ -149,19 +125,17 @@ public class UserDaoJDBCImpl implements UserDao {
         Statement statement = null;
         ResultSet resultSet = null;
         List<User> users = new ArrayList<>();
-
         try {
-            connection = util.getInstance().getConnection();
+            Connection connection = Util.getInstance().getConnection();
             statement = connection.createStatement();
-
             resultSet = statement.executeQuery("SELECT  * FROM " + tableName);
 
             while (resultSet.next()) {
-                long id = resultSet.getInt(1);
-                String name = resultSet.getString(2);
-                String lastName = resultSet.getString(3);
-                byte age = resultSet.getByte(4);
-                User user = new User(name, lastName, age);
+                User user = new User();
+                user.setId(resultSet.getLong("ID"));
+                user.setName(resultSet.getString("NAME"));
+                user.setLastName(resultSet.getString("LASTNAME"));
+                user.setAge(resultSet.getByte("AGE"));
                 users.add(user);
             }
 
@@ -172,24 +146,15 @@ public class UserDaoJDBCImpl implements UserDao {
                 if (connection != null) {
                     connection.close();
                 }
+                if (statement != null) {
+                    statement.close();
+                }
+                if (resultSet != null) {
+                    resultSet.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (resultSet != null) try  {
-                        resultSet.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
-
         }
         return users;
     }
@@ -199,7 +164,7 @@ public class UserDaoJDBCImpl implements UserDao {
         String cleanUsersTable = "TRUNCATE TABLE " +
                 tableName;
         try {
-            connection = util.getInstance().getConnection();
+            Connection connection = Util.getInstance().getConnection();
             statement = connection.prepareStatement(cleanUsersTable);
             statement.execute(cleanUsersTable);
             System.out.println("Таблица очищена");
@@ -210,27 +175,14 @@ public class UserDaoJDBCImpl implements UserDao {
                 if (connection != null) {
                     connection.close();
                 }
+                if (statement != null) {
+                    statement.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        if (statement != null) {
-                            statement.close();
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         }
-
     }
 }
+
 
